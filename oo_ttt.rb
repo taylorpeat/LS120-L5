@@ -30,7 +30,7 @@ class Board
                                     '     .     ',
                                     ' ' * 11,
                                     ' ' * 11],
-                       b:          [].fill(' ' * 11, 0..4),
+                       b:          [].fill(' ' * 11, 0..4)
                      }.freeze
 
   attr_reader :current_board
@@ -225,7 +225,7 @@ class Computer
 end
 
 class Game
-  WINNING_SCORE = 5
+  WINNING_SCORE = 3
   attr_accessor :winner_marker
   attr_reader :human, :computer, :game_board, :score
 
@@ -240,19 +240,22 @@ class Game
 
   def play
     loop do
-      loop do
-        player_turn(human)
-        break if determine_winner_marker(human.marker)
-        player_turn(computer)
-        break if determine_winner_marker(computer.marker)
-      end
-
-      display_winner_message
+      player_turns
       update_score
+      display_winner_message
       break if overall_winner? || replay?
       initialize
     end
-    final_message
+    goodbye_message
+  end
+
+  def player_turns
+    loop do
+      [human, computer].each do |player|
+        player_turn(player)
+        return if determine_winner_marker(player.marker)
+      end
+    end
   end
 
   def player_turn(player)
@@ -306,20 +309,22 @@ class Game
     when computer.marker then score[1] += 1
     else score[2] += 1
     end
+    update_display
   end
 
   def display_score
     system 'clear' or system 'cls'
-    puts "CURRENT SCORE: #{score[0]} Wins / #{score[1]} Losses / #{score[2]} Ties\n\n"
+    puts " CURRENT SCORE: #{score[0]} Wins / #{score[1]} Losses / #{score[2]} Ties\n\n"
   end
 
-  def final_message
+  def goodbye_message
     if score[0] == WINNING_SCORE
-      puts "Congratulations! You won #{score[0]} to #{score[1]}."
+      puts "Congratulations! You beat the computer #{score[0]} games to #{score[1]}."
     elsif score[1] == WINNING_SCORE
-      puts "Sorry. You lost #{score[1]} to #{score[0]}"
+      puts "Sorry. You lost to the computer #{score[1]} games to #{score[0]}."
     end
-    puts "Thanks for playing!\n\n"
+    sleep 1
+    puts "\nThanks for playing!\n\n"
   end
 end
 
