@@ -30,7 +30,7 @@ class Board
                                     '     .     ',
                                     ' ' * 11,
                                     ' ' * 11],
-                       blank:          [].fill(' ' * 11, 0..4)
+                       blank:      [].fill(' ' * 11, 0..4)
                      }.freeze
 
   attr_reader :current_board
@@ -51,10 +51,10 @@ class Board
 
   def draw
     puts
-    printing_array = [current_board.values_at(0..2),
-                      current_board.values_at(3..5),
-                      current_board.values_at(6..8)]
-    printing_array.each_with_index do |row_array, row_index|
+    printing_array_rows = [current_board.values_at(0..2),
+                           current_board.values_at(3..5),
+                           current_board.values_at(6..8)]
+    printing_array_rows.each_with_index do |row_array, row_index|
       print_row(row_array)
       puts '    -----------+-----------+-----------' unless row_index == 2
     end
@@ -62,10 +62,10 @@ class Board
   end
 
   def print_row(row_array)
-    5.times do |i|
+    5.times do |line|
       row_array.each_with_index do |square_value, square_index|
         print ' ' * 4 if square_index == 0
-        print DISPLAY_TEMPLATE[square_value][i]
+        print DISPLAY_TEMPLATE[square_value][line]
         print square_index == 2 ? "\n" : '|'
       end
     end
@@ -285,16 +285,15 @@ class Game
   end
 
   def display_winner_message
-    puts
     sleep 1
     if winner_marker == human.marker
-      puts 'Congratulations! You won!'
+      puts "\nCongratulations! You won!"
       sleep 1
       puts "\nOn easy...\n\n"
     elsif winner_marker == computer.marker
-      puts "You lost at tic-tac-toe... that's embarrasing.\n\n"
+      puts "\nYou lost at tic-tac-toe... that's embarrasing.\n\n"
     else
-      puts "Tied. Try it on easy if you feel like winning...\n\n"
+      puts "\nTied. Try it on easy if you feel like winning...\n\n"
       if computer.difficulty == 'easy'
         sleep 1
         puts "Oh wait... you were playing on easy... ouch\n\n"
