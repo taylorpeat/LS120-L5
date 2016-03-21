@@ -30,7 +30,7 @@ class Board
                                     '     .     ',
                                     ' ' * 11,
                                     ' ' * 11],
-                       b:          [].fill(' ' * 11, 0..4)
+                       blank:          [].fill(' ' * 11, 0..4)
                      }.freeze
 
   attr_reader :current_board
@@ -41,7 +41,7 @@ class Board
 
   def initialize_board
     starting_board = []
-    (0..8).each { |position| starting_board[position] = :b }
+    (0..8).each { |position| starting_board[position] = :blank }
     starting_board
   end
 
@@ -75,7 +75,7 @@ class Board
     spacer = ' ' * 16
     current_board.each_with_index do |square_value, square_index|
       print spacer if [0, 3, 6].include?(square_index)
-      print square_value == :b ? " #{(square_index + 1)} " : '   '
+      print square_value == :blank ? " #{(square_index + 1)} " : '   '
       print [2, 5, 8].include?(square_index) ? "\n" : '|'
       print spacer + "---+---+---\n" if [2, 5].include?(square_index)
     end
@@ -86,7 +86,7 @@ class Board
     WINNING_COMBOS.any? do |combo|
       return marker if combo.all? { |combo_num| player_squares.include?(combo_num) }
     end
-    :tie unless current_board.any? { |square_value| square_value == :b }
+    :tie unless current_board.any? { |square_value| square_value == :blank }
   end
 end
 
@@ -101,7 +101,7 @@ class Human
     loop do
       square_selection = gets.chomp.to_i
       return (square_selection - 1) if (1..9).cover?(square_selection) &&
-                                       current_board[square_selection - 1] == :b
+                                       current_board[square_selection - 1] == :blank
       if (1..9).cover?(square_selection)
         puts "\nThat square has been taken. Please select another square"
       else
@@ -132,7 +132,7 @@ class Computer
     @difficulty = set_difficulty
     @opponent_marker = opp_marker
     @marker = Board::DISPLAY_TEMPLATE.keys
-                                     .select { |symbol| ![:b, opponent_marker].include?(symbol) }
+                                     .select { |symbol| ![:blank, opponent_marker].include?(symbol) }
                                      .sample
   end
 
@@ -148,7 +148,7 @@ class Computer
 
   def select_square(current_board)
     sleep 1
-    empty_squares = moves_for(current_board, :b)
+    empty_squares = moves_for(current_board, :blank)
     human_squares = moves_for(current_board, opponent_marker)
     computer_squares = moves_for(current_board, marker)
     return empty_squares.sample if difficulty == 'easy'
