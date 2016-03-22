@@ -120,6 +120,10 @@ module GameLogic # Implements game rules
   def double
     hit
     stand
+    double_wager
+  end
+
+  def double_wager
     player.balance -= current_hand.wager
     current_hand.wager *= 2
   end
@@ -138,12 +142,8 @@ module GameLogic # Implements game rules
   end
 
   def hands_finalized?
-    if dealer_hand.value == MAX_TOTAL ||
-       player.hands.all? { |hand| !hand.active || hand.value >= MAX_TOTAL }
-      player.hands.each { |hand| hand.active = false }
-      self.current_hand = nil
-      true
-    end
+    dealer_hand.value == MAX_TOTAL ||
+    player.hands.all? { |hand| !hand.active || hand.value >= MAX_TOTAL }
   end
 
   def hide_dealer_card?
@@ -491,9 +491,14 @@ class Game
 
   def players_turn
     loop do
-      break if hands_finalized?
+      return deactivate_hands if hands_finalized?
       update_each_player_hand
     end
+  end
+
+  def deactivate_hands
+    player.hands.each { |hand| hand.active = false }
+    self.current_hand = nil
   end
 
   def dealers_turn
@@ -519,10 +524,10 @@ class Game
     print player.hands.size > 1 ? " for hand ##{player.hands.index(current_hand) + 1}: " : ': '
     valid_plays.each { |choice| print choice + ' ' }
     puts
-    send get_valid_decision(valid_plays)
+    send valid_decision(valid_plays)
   end
 
-  def get_valid_decision(valid_plays)
+  def valid_decision(valid_plays)
     decision = gets.chomp
     loop do
       return decision.downcase if valid_plays.include?(decision.capitalize)
@@ -562,7 +567,7 @@ class Game
   end
 
   def replay?
-    return false if player.balance == 0 || !(1..999).cover?(player.balance)
+    return false unless (1..999).cover?(player.balance)
     puts "\nEnter 'y' if you would like to play another hand."
     gets.chomp.downcase == 'y'
   end
