@@ -251,7 +251,8 @@ end
 class Hand
   include BlackjackConstants
   REDUCE_ACE_VALUE = 10
-  attr_accessor :cards, :image, :active, :game_outcome, :value
+  attr_accessor :active, :game_outcome, :value
+  attr_reader :cards, :image
 
   def initialize
     @cards = []
@@ -304,8 +305,8 @@ class Hand
 end
 
 class Card
-  attr_reader :suit, :image
-  attr_accessor :value, :name
+  attr_reader :suit, :image, :name
+  attr_accessor :value
 
   def initialize(card_values)
     @suit = card_values[0]
